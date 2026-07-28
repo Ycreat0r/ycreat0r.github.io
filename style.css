@@ -355,7 +355,7 @@ section {
 /* Текст поверх видео — ниже и не перекрывает центр */
 .hero-content {
     position: absolute;
-    bottom: 260px;
+    bottom: 560px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 5;
