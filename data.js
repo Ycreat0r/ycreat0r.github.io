@@ -2,21 +2,18 @@
    PORTFOLIO DATABASE
    Добавляй новые работы только сюда
 ===================================================== */
-
 const works = [
-
     {
         id: 1,
-        title: "Lazertag_1",
+        title: "Lazertag",
         type: "video",
         category: "commercial",
         year: "2025",
-        thumbnail: "assets/images/lazertag.jpg",          // превью (можно то же видео или картинку)
-        video: "assets/videos/Lazertag_1.mp4",   // ← точное имя файла
+        thumbnail: "assets/images/lazertag.jpg",
+        video: "assets/videos/Lazertag_1.mp4",
         description: "Репортажная съёмка мероприятия Lazertag.",
         tags: ["Репортаж", "Event", "4K"]
     },
-
     {
         id: 2,
         title: "Форум МАИФ Пулково",
@@ -24,11 +21,10 @@ const works = [
         category: "commercial",
         year: "2025",
         thumbnail: "assets/images/maif.jpg",
-        video: "assets/videos/MAIFF_Pulkovo.mp4",  // ← точное имя файла
+        video: "assets/videos/MAIFF_Pulkovo.mp4",
         description: "Съёмка форума МАИФ в Пулково.",
         tags: ["Event", "Corporate", "Video"]
     },
-
     {
         id: 3,
         title: "Posvyat",
@@ -40,5 +36,4 @@ const works = [
         description: "Кинематографичный ролик.",
         tags: ["Cinema", "Creative"]
     }
-
 ];
