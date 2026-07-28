@@ -36,42 +36,39 @@
 
     <!-- ================= HERO CAROUSEL ================= -->
     <section class="hero">
-        <div class="hero-carousel">
 
-            <!-- Left card -->
-            <div class="carousel-card side left" data-index="0">
-                <div class="card-frame">
-                    <video muted loop playsinline preload="metadata"></video>
-                    <div class="card-overlay"></div>
+        <div class="carousel-wrapper">
+            <div class="hero-carousel">
+
+                <div class="carousel-card side left">
+                    <div class="card-frame">
+                        <video muted loop playsinline preload="metadata"></video>
+                        <div class="card-overlay"></div>
+                    </div>
                 </div>
+
+                <div class="carousel-card center">
+                    <div class="card-frame">
+                        <video muted loop playsinline autoplay preload="auto"></video>
+                        <div class="card-overlay"></div>
+                    </div>
+                </div>
+
+                <div class="carousel-card side right">
+                    <div class="card-frame">
+                        <video muted loop playsinline preload="metadata"></video>
+                        <div class="card-overlay"></div>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- Center (main) card -->
-            <div class="carousel-card center active" data-index="1">
-                <div class="card-frame">
-                    <video muted loop playsinline autoplay preload="auto"></video>
-                    <div class="card-overlay"></div>
-                </div>
-            </div>
-
-            <!-- Right card -->
-            <div class="carousel-card side right" data-index="2">
-                <div class="card-frame">
-                    <video muted loop playsinline preload="metadata"></video>
-                    <div class="card-overlay"></div>
-                </div>
-            </div>
-
+            <button class="carousel-arrow prev" aria-label="Предыдущее">‹</button>
+            <button class="carousel-arrow next" aria-label="Следующее">›</button>
         </div>
 
-        <!-- Arrows -->
-        <button class="carousel-arrow prev" aria-label="Предыдущее">‹</button>
-        <button class="carousel-arrow next" aria-label="Следующее">›</button>
-
-        <!-- Dots -->
         <div class="carousel-dots"></div>
 
-        <!-- Hero text -->
         <div class="hero-content">
             <span class="subtitle">VIDEO • PHOTO • CREATIVE</span>
             <h1>Видео и фото,<br>которые рассказывают историю.</h1>

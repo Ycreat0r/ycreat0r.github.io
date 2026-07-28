@@ -27,59 +27,45 @@ window.addEventListener("load", () => {
 });
 
 /* =====================================================
-   HERO VIDEO CAROUSEL
+   HERO VIDEO CAROUSEL (smooth slide)
 ===================================================== */
 
 const heroVideos = works.filter(w => w.type === "video");
 let currentHeroIndex = 0;
+let isAnimating = false;
 
-const cards = {
-    left: document.querySelector(".carousel-card.left"),
-    center: document.querySelector(".carousel-card.center"),
-    right: document.querySelector(".carousel-card.right")
-};
+const cardLeft = document.querySelector(".carousel-card.left");
+const cardCenter = document.querySelector(".carousel-card.center");
+const cardRight = document.querySelector(".carousel-card.right");
 
 const dotsContainer = document.querySelector(".carousel-dots");
 const prevBtn = document.querySelector(".carousel-arrow.prev");
 const nextBtn = document.querySelector(".carousel-arrow.next");
 
-function getVideoSrc(index) {
+function getWork(index) {
     const i = ((index % heroVideos.length) + heroVideos.length) % heroVideos.length;
     return heroVideos[i];
 }
 
-function setCardVideo(card, work, shouldPlay = false) {
+function setVideo(card, work, play = false) {
     const video = card.querySelector("video");
     if (!video || !work) return;
 
-    if (video.dataset.src === work.video) {
-        if (shouldPlay) {
-            video.play().catch(() => {});
-        } else {
-            video.pause();
-        }
-        return;
+    if (video.dataset.src !== work.video) {
+        video.pause();
+        video.src = work.video;
+        video.dataset.src = work.video;
+        video.load();
     }
 
-    video.pause();
-    video.src = work.video;
-    video.dataset.src = work.video;
-    video.load();
-
-    if (shouldPlay) {
+    if (play) {
         video.play().catch(() => {});
+    } else {
+        video.pause();
     }
 }
 
-function updateCarousel() {
-    const prev = getVideoSrc(currentHeroIndex - 1);
-    const current = getVideoSrc(currentHeroIndex);
-    const next = getVideoSrc(currentHeroIndex + 1);
-
-    setCardVideo(cards.left, prev, false);
-    setCardVideo(cards.center, current, true);
-    setCardVideo(cards.right, next, false);
-
+function updateDots() {
     document.querySelectorAll(".carousel-dots button").forEach((dot, i) => {
         dot.classList.toggle("active", i === currentHeroIndex);
     });
@@ -91,35 +77,197 @@ function createDots() {
         const btn = document.createElement("button");
         btn.setAttribute("aria-label", `Видео ${i + 1}`);
         if (i === 0) btn.classList.add("active");
-        btn.addEventListener("click", () => {
-            currentHeroIndex = i;
-            updateCarousel();
-        });
+        btn.addEventListener("click", () => goTo(i));
         dotsContainer.appendChild(btn);
     });
 }
 
+function setInitialVideos() {
+    setVideo(cardLeft, getWork(currentHeroIndex - 1), false);
+    setVideo(cardCenter, getWork(currentHeroIndex), true);
+    setVideo(cardRight, getWork(currentHeroIndex + 1), false);
+    updateDots();
+}
+
+function getOffset() {
+    const centerW = cardCenter.offsetWidth || 560;
+    return Math.round(centerW * 0.78);
+}
+
+function applyPositions() {
+    const offset = getOffset();
+    gsap.set(cardLeft, { x: -offset, scale: 0.82, opacity: 0.5, filter: "brightness(0.65)", zIndex: 2 });
+    gsap.set(cardCenter, { x: 0, scale: 1, opacity: 1, filter: "brightness(1)", zIndex: 5 });
+    gsap.set(cardRight, { x: offset, scale: 0.82, opacity: 0.5, filter: "brightness(0.65)", zIndex: 2 });
+}
+
+function slide(direction) {
+    if (isAnimating || heroVideos.length < 2) return;
+    isAnimating = true;
+
+    const duration = 0.65;
+    const ease = "power2.inOut";
+    const offset = getOffset();
+
+    if (direction === "next") {
+        const newRightWork = getWork(currentHeroIndex + 2);
+
+        gsap.timeline({
+            onComplete: () => {
+                currentHeroIndex = (currentHeroIndex + 1) % heroVideos.length;
+                applyPositions();
+                setVideo(cardLeft, getWork(currentHeroIndex - 1), false);
+                setVideo(cardCenter, getWork(currentHeroIndex), true);
+                setVideo(cardRight, getWork(currentHeroIndex + 1), false);
+                updateDots();
+                isAnimating = false;
+            }
+        })
+        .to(cardLeft, {
+            x: -offset * 1.6,
+            opacity: 0,
+            scale: 0.7,
+            duration,
+            ease
+        }, 0)
+        .to(cardCenter, {
+            x: -offset,
+            scale: 0.82,
+            opacity: 0.5,
+            filter: "brightness(0.65)",
+            zIndex: 2,
+            duration,
+            ease
+        }, 0)
+        .to(cardRight, {
+            x: 0,
+            scale: 1,
+            opacity: 1,
+            filter: "brightness(1)",
+            zIndex: 5,
+            duration,
+            ease
+        }, 0)
+        .add(() => {
+            setVideo(cardLeft, newRightWork, false);
+            gsap.set(cardLeft, { x: offset * 1.6, opacity: 0, scale: 0.7 });
+        }, duration * 0.4)
+        .to(cardLeft, {
+            x: offset,
+            opacity: 0.5,
+            scale: 0.82,
+            filter: "brightness(0.65)",
+            duration: duration * 0.6,
+            ease
+        }, duration * 0.4);
+
+    } else {
+        const newLeftWork = getWork(currentHeroIndex - 2);
+
+        gsap.timeline({
+            onComplete: () => {
+                currentHeroIndex = (currentHeroIndex - 1 + heroVideos.length) % heroVideos.length;
+                applyPositions();
+                setVideo(cardLeft, getWork(currentHeroIndex - 1), false);
+                setVideo(cardCenter, getWork(currentHeroIndex), true);
+                setVideo(cardRight, getWork(currentHeroIndex + 1), false);
+                updateDots();
+                isAnimating = false;
+            }
+        })
+        .to(cardRight, {
+            x: offset * 1.6,
+            opacity: 0,
+            scale: 0.7,
+            duration,
+            ease
+        }, 0)
+        .to(cardCenter, {
+            x: offset,
+            scale: 0.82,
+            opacity: 0.5,
+            filter: "brightness(0.65)",
+            zIndex: 2,
+            duration,
+            ease
+        }, 0)
+        .to(cardLeft, {
+            x: 0,
+            scale: 1,
+            opacity: 1,
+            filter: "brightness(1)",
+            zIndex: 5,
+            duration,
+            ease
+        }, 0)
+        .add(() => {
+            setVideo(cardRight, newLeftWork, false);
+            gsap.set(cardRight, { x: -offset * 1.6, opacity: 0, scale: 0.7 });
+        }, duration * 0.4)
+        .to(cardRight, {
+            x: -offset,
+            opacity: 0.5,
+            scale: 0.82,
+            filter: "brightness(0.65)",
+            duration: duration * 0.6,
+            ease
+        }, duration * 0.4);
+    }
+}
+
 function nextSlide() {
-    currentHeroIndex = (currentHeroIndex + 1) % heroVideos.length;
-    updateCarousel();
+    slide("next");
 }
 
 function prevSlide() {
-    currentHeroIndex = (currentHeroIndex - 1 + heroVideos.length) % heroVideos.length;
-    updateCarousel();
+    slide("prev");
+}
+
+function goTo(index) {
+    if (isAnimating || index === currentHeroIndex) return;
+
+    const len = heroVideos.length;
+    const diff = ((index - currentHeroIndex) % len + len) % len;
+
+    if (diff <= len / 2) {
+        let steps = diff;
+        const run = () => {
+            if (steps <= 0) return;
+            slide("next");
+            steps--;
+            if (steps > 0) setTimeout(run, 700);
+        };
+        run();
+    } else {
+        let steps = len - diff;
+        const run = () => {
+            if (steps <= 0) return;
+            slide("prev");
+            steps--;
+            if (steps > 0) setTimeout(run, 700);
+        };
+        run();
+    }
 }
 
 if (heroVideos.length > 0) {
     createDots();
-    updateCarousel();
+    setInitialVideos();
+    applyPositions();
 
     nextBtn.addEventListener("click", nextSlide);
     prevBtn.addEventListener("click", prevSlide);
 
-    cards.left.addEventListener("click", prevSlide);
-    cards.right.addEventListener("click", nextSlide);
+    cardLeft.addEventListener("click", prevSlide);
+    cardRight.addEventListener("click", nextSlide);
 
-    setInterval(nextSlide, 8000);
+    window.addEventListener("resize", () => {
+        if (!isAnimating) applyPositions();
+    });
+
+    setInterval(() => {
+        if (!isAnimating) nextSlide();
+    }, 8000);
 }
 
 /* =====================================================
@@ -217,10 +365,6 @@ function applyFilters() {
 }
 
 searchInput.addEventListener("input", applyFilters);
-
-/* =====================================================
-   INIT PORTFOLIO
-===================================================== */
 
 renderWorks();
 
