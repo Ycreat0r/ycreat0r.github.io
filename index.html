@@ -39,35 +39,15 @@
 
         <div class="carousel-wrapper">
             <div class="hero-carousel">
-
-                <div class="carousel-card side left">
-                    <div class="card-frame">
-                        <video muted loop playsinline preload="metadata"></video>
-                        <div class="card-overlay"></div>
-                    </div>
-                </div>
-
-                <div class="carousel-card center">
-                    <div class="card-frame">
-                        <video muted loop playsinline autoplay preload="auto"></video>
-                        <div class="card-overlay"></div>
-                    </div>
-                </div>
-
-                <div class="carousel-card side right">
-                    <div class="card-frame">
-                        <video muted loop playsinline preload="metadata"></video>
-                        <div class="card-overlay"></div>
-                    </div>
-                </div>
-
+                <!-- карточки создаёт JS -->
+                <div class="carousel-track" id="carouselTrack"></div>
             </div>
 
             <button class="carousel-arrow prev" aria-label="Предыдущее">‹</button>
             <button class="carousel-arrow next" aria-label="Следующее">›</button>
         </div>
 
-        <div class="carousel-dots"></div>
+        <div class="carousel-dots" id="carouselDots"></div>
 
         <div class="hero-content">
             <span class="subtitle">VIDEO • PHOTO • CREATIVE</span>
@@ -92,18 +72,9 @@
             <h2>Создаю визуальные истории,<br>которые цепляют.</h2>
             <p>Я занимаюсь видеосъёмкой и фотографией, помогая брендам, компаниям и людям рассказывать свои истории через современный визуальный язык.</p>
             <div class="stats">
-                <div>
-                    <h3>120+</h3>
-                    <p>проектов</p>
-                </div>
-                <div>
-                    <h3>6</h3>
-                    <p>лет опыта</p>
-                </div>
-                <div>
-                    <h3>40+</h3>
-                    <p>клиентов</p>
-                </div>
+                <div><h3>120+</h3><p>проектов</p></div>
+                <div><h3>6</h3><p>лет опыта</p></div>
+                <div><h3>40+</h3><p>клиентов</p></div>
             </div>
         </div>
     </section>

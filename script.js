@@ -20,262 +20,213 @@ window.addEventListener("load", () => {
         opacity: 0,
         duration: 1,
         delay: 0.4,
-        onComplete: () => {
-            loader.style.display = "none";
-        }
+        onComplete: () => { loader.style.display = "none"; }
     });
 });
 
 /* =====================================================
-   HERO VIDEO CAROUSEL — плавный сдвиг без исчезновения
+   HERO CAROUSEL — Luma-style, без пропадания + свайп
 ===================================================== */
 
 const heroVideos = works.filter(w => w.type === "video");
 let currentHeroIndex = 0;
 let isAnimating = false;
+let autoplayTimer = null;
+const AUTOPLAY_MS = 8000; // сколько держится один ролик
 
-const cardLeft = document.querySelector(".carousel-card.left");
-const cardCenter = document.querySelector(".carousel-card.center");
-const cardRight = document.querySelector(".carousel-card.right");
-
-const dotsContainer = document.querySelector(".carousel-dots");
+const track = document.getElementById("carouselTrack");
+const dotsContainer = document.getElementById("carouselDots");
 const prevBtn = document.querySelector(".carousel-arrow.prev");
 const nextBtn = document.querySelector(".carousel-arrow.next");
 
-function getWork(index) {
-    const i = ((index % heroVideos.length) + heroVideos.length) % heroVideos.length;
-    return heroVideos[i];
+function buildCarousel() {
+    track.innerHTML = "";
+    dotsContainer.innerHTML = "";
+
+    heroVideos.forEach((work, i) => {
+        // card
+        const card = document.createElement("div");
+        card.className = "carousel-card";
+        card.dataset.index = i;
+        card.innerHTML = `
+            <video muted loop playsinline preload="metadata" src="${work.video}"></video>
+            <div class="card-overlay"></div>
+        `;
+        card.addEventListener("click", () => {
+            if (i !== currentHeroIndex) goTo(i);
+        });
+        track.appendChild(card);
+
+        // dot
+        const dot = document.createElement("button");
+        dot.setAttribute("aria-label", `Видео ${i + 1}`);
+        if (i === 0) dot.classList.add("active");
+        dot.addEventListener("click", () => goTo(i));
+        dotsContainer.appendChild(dot);
+    });
 }
 
-function setVideo(card, work, play = false) {
-    const video = card.querySelector("video");
-    if (!video || !work) return;
-
-    if (video.dataset.src !== work.video) {
-        video.pause();
-        video.src = work.video;
-        video.dataset.src = work.video;
-        video.load();
-    }
-
-    if (play) {
-        video.play().catch(() => {});
-    } else {
-        video.pause();
-    }
+function getOffset() {
+    const w = window.innerWidth;
+    if (w < 600) return Math.round(w * 0.55);
+    if (w < 900) return Math.round(w * 0.48);
+    if (w < 1200) return Math.round(w * 0.42);
+    return Math.round(Math.min(980, w * 0.72) * 0.72);
 }
 
-function updateDots() {
-    document.querySelectorAll(".carousel-dots button").forEach((dot, i) => {
+function layoutCards(animate = true) {
+    const cards = [...track.querySelectorAll(".carousel-card")];
+    const n = cards.length;
+    if (n === 0) return;
+
+    const offset = getOffset();
+    const duration = animate ? 0.7 : 0;
+
+    cards.forEach((card, i) => {
+        // кратчайшая разница индексов (циклическая)
+        let diff = i - currentHeroIndex;
+        if (diff > n / 2) diff -= n;
+        if (diff < -n / 2) diff += n;
+
+        const video = card.querySelector("video");
+
+        if (diff === 0) {
+            // центр
+            card.classList.add("is-center");
+            card.classList.remove("is-side");
+            gsap.to(card, {
+                x: 0,
+                y: "-50%",
+                xPercent: -50,
+                scale: 1,
+                opacity: 1,
+                filter: "brightness(1)",
+                zIndex: 5,
+                duration,
+                ease: "power2.inOut"
+            });
+            video.play().catch(() => {});
+        } else if (Math.abs(diff) === 1) {
+            // сосед слева / справа
+            card.classList.add("is-side");
+            card.classList.remove("is-center");
+            gsap.to(card, {
+                x: diff * offset,
+                y: "-50%",
+                xPercent: -50,
+                scale: 0.78,
+                opacity: 0.55,
+                filter: "brightness(0.6)",
+                zIndex: 2,
+                duration,
+                ease: "power2.inOut"
+            });
+            video.pause();
+        } else {
+            // дальние — чуть дальше и тусклее, но НЕ пропадают
+            card.classList.add("is-side");
+            card.classList.remove("is-center");
+            gsap.to(card, {
+                x: Math.sign(diff) * offset * 1.55,
+                y: "-50%",
+                xPercent: -50,
+                scale: 0.65,
+                opacity: 0.3,
+                filter: "brightness(0.45)",
+                zIndex: 1,
+                duration,
+                ease: "power2.inOut"
+            });
+            video.pause();
+        }
+    });
+
+    // dots
+    dotsContainer.querySelectorAll("button").forEach((dot, i) => {
         dot.classList.toggle("active", i === currentHeroIndex);
     });
 }
 
-function createDots() {
-    dotsContainer.innerHTML = "";
-    heroVideos.forEach((_, i) => {
-        const btn = document.createElement("button");
-        btn.setAttribute("aria-label", `Видео ${i + 1}`);
-        if (i === 0) btn.classList.add("active");
-        btn.addEventListener("click", () => goTo(i));
-        dotsContainer.appendChild(btn);
-    });
+function resetAutoplay() {
+    clearTimeout(autoplayTimer);
+    autoplayTimer = setTimeout(() => {
+        if (!isAnimating) goTo(currentHeroIndex + 1);
+    }, AUTOPLAY_MS);
 }
-
-function setInitialVideos() {
-    setVideo(cardLeft, getWork(currentHeroIndex - 1), false);
-    setVideo(cardCenter, getWork(currentHeroIndex), true);
-    setVideo(cardRight, getWork(currentHeroIndex + 1), false);
-    updateDots();
-}
-
-function getOffset() {
-    const centerW = cardCenter.offsetWidth || 980;
-    return Math.round(centerW * 0.72);
-}
-
-function applyPositions() {
-    const offset = getOffset();
-    gsap.set(cardLeft,  { x: -offset, scale: 0.78, opacity: 0.55, filter: "brightness(0.6)", zIndex: 2 });
-    gsap.set(cardCenter,{ x: 0,       scale: 1,    opacity: 1,    filter: "brightness(1)",   zIndex: 5 });
-    gsap.set(cardRight, { x:  offset, scale: 0.78, opacity: 0.55, filter: "brightness(0.6)", zIndex: 2 });
-}
-
-function slide(direction) {
-    if (isAnimating || heroVideos.length < 2) return;
-    isAnimating = true;
-
-    const duration = 0.7;
-    const ease = "power2.inOut";
-    const offset = getOffset();
-
-    if (direction === "next") {
-        const newRightWork = getWork(currentHeroIndex + 2);
-
-        gsap.timeline({
-            onComplete: () => {
-                currentHeroIndex = (currentHeroIndex + 1) % heroVideos.length;
-                applyPositions();
-                setVideo(cardLeft, getWork(currentHeroIndex - 1), false);
-                setVideo(cardCenter, getWork(currentHeroIndex), true);
-                setVideo(cardRight, getWork(currentHeroIndex + 1), false);
-                updateDots();
-                isAnimating = false;
-            }
-        })
-        /* Левая уезжает дальше влево, но остаётся чуть видимой */
-        .to(cardLeft, {
-            x: -offset * 1.55,
-            opacity: 0.25,
-            scale: 0.65,
-            duration,
-            ease
-        }, 0)
-        /* Центр → влево (затемнённый) */
-        .to(cardCenter, {
-            x: -offset,
-            scale: 0.78,
-            opacity: 0.55,
-            filter: "brightness(0.6)",
-            zIndex: 2,
-            duration,
-            ease
-        }, 0)
-        /* Правая → в центр */
-        .to(cardRight, {
-            x: 0,
-            scale: 1,
-            opacity: 1,
-            filter: "brightness(1)",
-            zIndex: 5,
-            duration,
-            ease
-        }, 0)
-        /* Новая правая появляется справа (не из ниоткуда, а из-за края) */
-        .add(() => {
-            setVideo(cardLeft, newRightWork, false);
-            gsap.set(cardLeft, {
-                x: offset * 1.55,
-                opacity: 0.25,
-                scale: 0.65,
-                filter: "brightness(0.6)",
-                zIndex: 1
-            });
-        }, duration * 0.35)
-        .to(cardLeft, {
-            x: offset,
-            opacity: 0.55,
-            scale: 0.78,
-            duration: duration * 0.65,
-            ease
-        }, duration * 0.35);
-
-    } else {
-        const newLeftWork = getWork(currentHeroIndex - 2);
-
-        gsap.timeline({
-            onComplete: () => {
-                currentHeroIndex = (currentHeroIndex - 1 + heroVideos.length) % heroVideos.length;
-                applyPositions();
-                setVideo(cardLeft, getWork(currentHeroIndex - 1), false);
-                setVideo(cardCenter, getWork(currentHeroIndex), true);
-                setVideo(cardRight, getWork(currentHeroIndex + 1), false);
-                updateDots();
-                isAnimating = false;
-            }
-        })
-        .to(cardRight, {
-            x: offset * 1.55,
-            opacity: 0.25,
-            scale: 0.65,
-            duration,
-            ease
-        }, 0)
-        .to(cardCenter, {
-            x: offset,
-            scale: 0.78,
-            opacity: 0.55,
-            filter: "brightness(0.6)",
-            zIndex: 2,
-            duration,
-            ease
-        }, 0)
-        .to(cardLeft, {
-            x: 0,
-            scale: 1,
-            opacity: 1,
-            filter: "brightness(1)",
-            zIndex: 5,
-            duration,
-            ease
-        }, 0)
-        .add(() => {
-            setVideo(cardRight, newLeftWork, false);
-            gsap.set(cardRight, {
-                x: -offset * 1.55,
-                opacity: 0.25,
-                scale: 0.65,
-                filter: "brightness(0.6)",
-                zIndex: 1
-            });
-        }, duration * 0.35)
-        .to(cardRight, {
-            x: -offset,
-            opacity: 0.55,
-            scale: 0.78,
-            duration: duration * 0.65,
-            ease
-        }, duration * 0.35);
-    }
-}
-
-function nextSlide() { slide("next"); }
-function prevSlide() { slide("prev"); }
 
 function goTo(index) {
-    if (isAnimating || index === currentHeroIndex) return;
+    if (isAnimating || heroVideos.length === 0) return;
 
-    const len = heroVideos.length;
-    const diff = ((index - currentHeroIndex) % len + len) % len;
-
-    if (diff <= len / 2) {
-        let steps = diff;
-        const run = () => {
-            if (steps <= 0) return;
-            slide("next");
-            steps--;
-            if (steps > 0) setTimeout(run, 750);
-        };
-        run();
-    } else {
-        let steps = len - diff;
-        const run = () => {
-            if (steps <= 0) return;
-            slide("prev");
-            steps--;
-            if (steps > 0) setTimeout(run, 750);
-        };
-        run();
+    const n = heroVideos.length;
+    const next = ((index % n) + n) % n;
+    if (next === currentHeroIndex) {
+        resetAutoplay();
+        return;
     }
+
+    isAnimating = true;
+    currentHeroIndex = next;
+    layoutCards(true);
+    resetAutoplay();
+
+    setTimeout(() => {
+        isAnimating = false;
+    }, 720);
 }
 
+function nextSlide() { goTo(currentHeroIndex + 1); }
+function prevSlide() { goTo(currentHeroIndex - 1); }
+
+/* Свайп */
+let touchStartX = 0;
+let touchEndX = 0;
+
+track.addEventListener("touchstart", e => {
+    touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+track.addEventListener("touchend", e => {
+    touchEndX = e.changedTouches[0].screenX;
+    const dx = touchEndX - touchStartX;
+    if (Math.abs(dx) > 50) {
+        if (dx < 0) nextSlide();
+        else prevSlide();
+    }
+}, { passive: true });
+
+/* мышь-drag (опционально) */
+let dragStartX = 0;
+let isDragging = false;
+
+track.addEventListener("mousedown", e => {
+    isDragging = true;
+    dragStartX = e.clientX;
+});
+
+window.addEventListener("mouseup", e => {
+    if (!isDragging) return;
+    isDragging = false;
+    const dx = e.clientX - dragStartX;
+    if (Math.abs(dx) > 60) {
+        if (dx < 0) nextSlide();
+        else prevSlide();
+    }
+});
+
 if (heroVideos.length > 0) {
-    createDots();
-    setInitialVideos();
-    applyPositions();
+    buildCarousel();
+    // начальная раскладка без анимации
+    layoutCards(false);
+    // чуть подождать размеры
+    requestAnimationFrame(() => layoutCards(false));
+    resetAutoplay();
 
     nextBtn.addEventListener("click", nextSlide);
     prevBtn.addEventListener("click", prevSlide);
-    cardLeft.addEventListener("click", prevSlide);
-    cardRight.addEventListener("click", nextSlide);
 
     window.addEventListener("resize", () => {
-        if (!isAnimating) applyPositions();
+        if (!isAnimating) layoutCards(false);
     });
-
-    setInterval(() => {
-        if (!isAnimating) nextSlide();
-    }, 8000);
 }
 
 /* =====================================================
@@ -294,8 +245,7 @@ function renderWorks() {
         if (work.type === "video") {
             media = `
                 <video muted loop playsinline preload="metadata"
-                    src="${work.video}"
-                    poster="${work.thumbnail || ''}">
+                    src="${work.video}" poster="${work.thumbnail || ''}">
                 </video>
                 <div class="video-indicator">▶</div>
             `;
@@ -313,7 +263,6 @@ function renderWorks() {
                 </div>
             </div>
         `;
-
         card.addEventListener("click", () => openModal(work));
         portfolioGrid.appendChild(card);
     });
@@ -390,7 +339,7 @@ function hideModal() {
 
 closeModal.addEventListener("click", hideModal);
 document.querySelector(".modal-overlay").addEventListener("click", hideModal);
-document.addEventListener("keydown", (e) => {
+document.addEventListener("keydown", e => {
     if (e.key === "Escape") hideModal();
 });
 
@@ -412,11 +361,11 @@ document.querySelectorAll(".mobile-menu a").forEach(link => {
 
 const cursor = document.getElementById("cursor");
 
-document.addEventListener("mousemove", (e) => {
+document.addEventListener("mousemove", e => {
     gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.2 });
 });
 
-document.querySelectorAll("a, button, .work-card, input, textarea, .carousel-card, .carousel-arrow").forEach(el => {
+document.querySelectorAll("a, button, .work-card, input, textarea, .carousel-arrow").forEach(el => {
     el.addEventListener("mouseenter", () => cursor.classList.add("cursor-hover"));
     el.addEventListener("mouseleave", () => cursor.classList.remove("cursor-hover"));
 });
@@ -425,13 +374,13 @@ document.querySelectorAll("a, button, .work-card, input, textarea, .carousel-car
    VIDEO HOVER IN PORTFOLIO
 ===================================================== */
 
-document.addEventListener("mouseenter", (e) => {
+document.addEventListener("mouseenter", e => {
     if (e.target.tagName === "VIDEO" && e.target.closest(".work-card")) {
         e.target.play().catch(() => {});
     }
 }, true);
 
-document.addEventListener("mouseleave", (e) => {
+document.addEventListener("mouseleave", e => {
     if (e.target.tagName === "VIDEO" && e.target.closest(".work-card")) {
         e.target.pause();
     }
@@ -452,49 +401,31 @@ heroTimeline
 
 gsap.utils.toArray("section:not(.hero)").forEach(section => {
     gsap.from(section, {
-        opacity: 0,
-        y: 60,
-        duration: 1,
-        ease: "power3.out",
+        opacity: 0, y: 60, duration: 1, ease: "power3.out",
         scrollTrigger: { trigger: section, start: "top 85%" }
     });
 });
 
 gsap.to(".about-left img", {
-    y: -60,
-    ease: "none",
-    scrollTrigger: {
-        trigger: ".about",
-        start: "top bottom",
-        end: "bottom top",
-        scrub: true
-    }
+    y: -60, ease: "none",
+    scrollTrigger: { trigger: ".about", start: "top bottom", end: "bottom top", scrub: true }
 });
 
 function animateCards() {
     gsap.from(".work-card", {
-        opacity: 0,
-        y: 40,
-        scale: 0.96,
-        stagger: 0.07,
-        duration: 0.7,
-        ease: "power3.out"
+        opacity: 0, y: 40, scale: 0.96, stagger: 0.07, duration: 0.7, ease: "power3.out"
     });
 }
 
 gsap.utils.toArray(".service-card").forEach(card => {
     gsap.from(card, {
-        opacity: 0,
-        y: 50,
-        duration: 0.9,
+        opacity: 0, y: 50, duration: 0.9,
         scrollTrigger: { trigger: card, start: "top 88%" }
     });
 });
 
 gsap.from(".cta-content", {
-    scale: 0.92,
-    opacity: 0,
-    duration: 1.1,
+    scale: 0.92, opacity: 0, duration: 1.1,
     scrollTrigger: { trigger: ".cta", start: "top 75%" }
 });
 
