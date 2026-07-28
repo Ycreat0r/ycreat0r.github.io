@@ -35,5 +35,16 @@ const works = [
         video: "assets/videos/hero.mp4",
         description: "Кинематографичный ролик.",
         tags: ["Cinema", "Creative"]
-    }
+    },
+    // {
+    //     id: 4,
+    //     title: "Vasya",
+    //     type: "video",
+    //     category: "personal",
+    //     year: "2025",
+    //     thumbnail: "assets/images/vasya.jpg",
+    //     video: "assets/videos/02_Vasya.mp4",
+    //     description: "Описание ролика.",
+    //     tags: ["Video", "Personal"]
+    // }
 ];
