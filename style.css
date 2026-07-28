@@ -87,7 +87,7 @@ img, video {
    CUSTOM CURSOR
 ===================================================== */
 
-#cursor {
+/* #cursor {
     width: 25px;
     height: 25px;
     border-radius: 50%;
@@ -103,7 +103,7 @@ img, video {
 .cursor-hover {
     width: 70px !important;
     height: 70px !important;
-}
+} */
 
 /* =====================================================
    LOADER
@@ -350,14 +350,19 @@ section {
     transform: scale(1.35);
 }
 
-/* Текст поверх видео */
+
+
+/* Текст поверх видео — ниже и не перекрывает центр */
 .hero-content {
-    position: relative;
+    position: absolute;
+    bottom: 160px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 5;
-    max-width: 900px;
+    max-width: 1000px;
+    width: 90%;
     text-align: center;
     padding: 0 40px;
-    margin-top: 40px;
 }
 
 .subtitle {
@@ -365,25 +370,28 @@ section {
     font-size: 13px;
     letter-spacing: 8px;
     color: rgba(255,255,255,.7);
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     opacity: 0;
 }
 
 .hero h1 {
-    font-size: clamp(40px, 6vw, 80px);
-    line-height: 1.05;
+    font-size: clamp(36px, 5.5vw, 72px);
+    line-height: 1.08;
     font-weight: 700;
     letter-spacing: -2px;
     opacity: 0;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .hero p {
-    margin-top: 24px;
-    max-width: 520px;
+    margin-top: 20px;
+    max-width: 540px;
     margin-left: auto;
     margin-right: auto;
     color: rgba(255,255,255,.7);
-    font-size: 18px;
+    font-size: 17px;
     line-height: 1.6;
     opacity: 0;
 }
@@ -392,13 +400,24 @@ section {
     display: flex;
     gap: 16px;
     justify-content: center;
-    margin-top: 40px;
+    margin-top: 32px;
     opacity: 0;
+}
+
+/* Точки чуть выше индикатора скролла */
+.carousel-dots {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 14px;
+    z-index: 10;
 }
 
 .scroll-indicator {
     position: absolute;
-    bottom: 40px;
+    bottom: 28px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 11px;
@@ -407,31 +426,34 @@ section {
     z-index: 10;
 }
 
-.scroll-indicator::after {
-    content: "";
-    display: block;
-    width: 1px;
-    height: 40px;
-    background: white;
-    margin: 12px auto 0;
-    opacity: .4;
-}
-
 @media (max-width: 900px) {
-    .carousel-arrow { width: 44px; height: 44px; font-size: 24px; }
-    .carousel-arrow.prev { left: 16px; }
-    .carousel-arrow.next { right: 16px; }
-    .carousel-dots { bottom: 100px; }
+    .hero-content {
+        bottom: 140px;
+        padding: 0 24px;
+    }
+    .carousel-dots {
+        bottom: 90px;
+    }
 }
 
 @media (max-width: 600px) {
-    .hero-content { padding: 0 24px; }
-    .hero h1 { font-size: 36px; }
-    .hero-buttons { flex-direction: column; width: 100%; }
-    .hero-buttons a { width: 100%; }
-    .carousel-arrow.prev { left: 10px; }
-    .carousel-arrow.next { right: 10px; }
-    .carousel-dots { bottom: 90px; }
+    .hero-content {
+        bottom: 130px;
+        padding: 0 20px;
+    }
+    .hero h1 {
+        font-size: 32px;
+    }
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+    .hero-buttons a {
+        width: 100%;
+    }
+    .carousel-dots {
+        bottom: 85px;
+    }
 }
 
 /* =====================================================

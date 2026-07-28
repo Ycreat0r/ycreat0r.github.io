@@ -269,20 +269,20 @@ document.querySelectorAll(".mobile-menu a").forEach(link => {
     link.addEventListener("click", () => mobileMenu.classList.remove("active"));
 });
 
-/* =====================================================
-   CUSTOM CURSOR
-===================================================== */
+// /* =====================================================
+//    CUSTOM CURSOR
+// ===================================================== */
 
-const cursor = document.getElementById("cursor");
+// const cursor = document.getElementById("cursor");
 
-document.addEventListener("mousemove", e => {
-    gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.2 });
-});
+// document.addEventListener("mousemove", e => {
+//     gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.2 });
+// });
 
-document.querySelectorAll("a, button, .work-card, input, textarea, .carousel-arrow").forEach(el => {
-    el.addEventListener("mouseenter", () => cursor.classList.add("cursor-hover"));
-    el.addEventListener("mouseleave", () => cursor.classList.remove("cursor-hover"));
-});
+// document.querySelectorAll("a, button, .work-card, input, textarea, .carousel-arrow").forEach(el => {
+//     el.addEventListener("mouseenter", () => cursor.classList.add("cursor-hover"));
+//     el.addEventListener("mouseleave", () => cursor.classList.remove("cursor-hover"));
+// });
 
 /* =====================================================
    VIDEO HOVER IN PORTFOLIO
