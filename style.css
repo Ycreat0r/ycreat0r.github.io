@@ -245,12 +245,11 @@ section {
 }
 
 /* =====================================================
-   HERO + CAROUSEL
+   HERO + CAROUSEL  (увеличен ~2x)
 ===================================================== */
 
 .hero {
-    height: 100vh;
-    min-height: 900px;
+    min-height: 100vh;
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -258,14 +257,15 @@ section {
     justify-content: flex-start;
     overflow: hidden;
     position: relative;
-    padding-top: 140px;
+    padding-top: 130px;
+    padding-bottom: 60px;
 }
 
 .carousel-wrapper {
     position: relative;
     width: 100%;
-    max-width: 1400px;
-    height: 380px;
+    max-width: 100%;
+    height: 720px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -279,7 +279,7 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    perspective: 1400px;
+    perspective: 1800px;
 }
 
 .carousel-card {
@@ -291,11 +291,11 @@ section {
 .card-frame {
     width: 100%;
     height: 100%;
-    border-radius: 18px;
+    border-radius: 22px;
     overflow: hidden;
     background: #111;
     border: 1px solid rgba(255,255,255,.12);
-    box-shadow: 0 25px 60px rgba(0,0,0,.5);
+    box-shadow: 0 40px 90px rgba(0,0,0,.55);
     position: relative;
 }
 
@@ -312,40 +312,43 @@ section {
     pointer-events: none;
 }
 
+/* Центр — крупный */
 .carousel-card.center {
-    width: 560px;
-    height: 340px;
+    width: 980px;
+    height: 580px;
     z-index: 5;
 }
 
+/* Боковые — тоже крупные, но меньше центра */
 .carousel-card.side {
-    width: 380px;
-    height: 240px;
+    width: 720px;
+    height: 430px;
     z-index: 2;
 }
 
 .carousel-card.left {
-    opacity: 0.5;
-    filter: brightness(0.65);
+    opacity: 0.55;
+    filter: brightness(0.6);
 }
 
 .carousel-card.right {
-    opacity: 0.5;
-    filter: brightness(0.65);
+    opacity: 0.55;
+    filter: brightness(0.6);
 }
 
+/* Стрелки ближе к краям страницы */
 .carousel-arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     border: 1px solid rgba(255,255,255,.25);
-    background: rgba(0,0,0,.45);
+    background: rgba(0,0,0,.5);
     backdrop-filter: blur(12px);
     color: white;
-    font-size: 28px;
+    font-size: 30px;
     cursor: pointer;
     z-index: 20;
     display: flex;
@@ -360,21 +363,28 @@ section {
     border-color: white;
 }
 
-.carousel-arrow.prev { left: 24px; }
-.carousel-arrow.next { right: 24px; }
+.carousel-arrow.prev {
+    left: 40px;
+}
 
+.carousel-arrow.next {
+    right: 40px;
+}
+
+/* Точки — заметно ниже роликов */
 .carousel-dots {
     display: flex;
-    gap: 12px;
+    gap: 14px;
     justify-content: center;
-    margin-top: 28px;
+    margin-top: 55px;
+    margin-bottom: 10px;
     z-index: 5;
     position: relative;
 }
 
 .carousel-dots button {
-    width: 10px;
-    height: 10px;
+    width: 11px;
+    height: 11px;
     border-radius: 50%;
     border: none;
     background: rgba(255,255,255,.3);
@@ -385,14 +395,14 @@ section {
 
 .carousel-dots button.active {
     background: white;
-    transform: scale(1.3);
+    transform: scale(1.35);
 }
 
 .hero-content {
     max-width: 900px;
     text-align: center;
     padding: 0 40px;
-    margin-top: 40px;
+    margin-top: 35px;
     z-index: 3;
     position: relative;
 }
@@ -435,7 +445,7 @@ section {
 
 .scroll-indicator {
     position: absolute;
-    bottom: 30px;
+    bottom: 24px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 11px;
@@ -448,7 +458,7 @@ section {
     content: "";
     display: block;
     width: 1px;
-    height: 40px;
+    height: 36px;
     background: white;
     margin: 12px auto 0;
     opacity: .4;
@@ -964,6 +974,12 @@ footer {
    RESPONSIVE
 ===================================================== */
 
+@media (max-width: 1400px) {
+    .carousel-card.center { width: 820px; height: 490px; }
+    .carousel-card.side { width: 600px; height: 360px; }
+    .carousel-wrapper { height: 620px; }
+}
+
 @media (max-width: 1200px) {
     .navbar { padding: 30px 40px; }
     section { padding: 120px 40px; }
@@ -974,9 +990,11 @@ footer {
         grid-column: span 1;
         height: 450px;
     }
-    .carousel-wrapper { height: 340px; }
-    .carousel-card.center { width: 480px; height: 300px; }
-    .carousel-card.side { width: 300px; height: 190px; }
+    .carousel-wrapper { height: 520px; }
+    .carousel-card.center { width: 680px; height: 400px; }
+    .carousel-card.side { width: 480px; height: 290px; }
+    .carousel-arrow.prev { left: 20px; }
+    .carousel-arrow.next { right: 20px; }
 }
 
 @media (max-width: 900px) {
@@ -986,28 +1004,30 @@ footer {
     .about-left img { height: 500px; }
     .portfolio-top { flex-direction: column; align-items: flex-start; }
     #searchInput { width: 100%; }
-    .hero { padding-top: 110px; min-height: 820px; }
-    .carousel-wrapper { height: 280px; }
-    .carousel-card.center { width: 340px; height: 210px; }
-    .carousel-card.side { width: 200px; height: 130px; }
-    .carousel-arrow { width: 42px; height: 42px; font-size: 22px; }
-    .carousel-arrow.prev { left: 10px; }
-    .carousel-arrow.next { right: 10px; }
+    .hero { padding-top: 100px; }
+    .carousel-wrapper { height: 380px; }
+    .carousel-card.center { width: 480px; height: 290px; }
+    .carousel-card.side { width: 300px; height: 190px; }
+    .carousel-arrow { width: 44px; height: 44px; font-size: 24px; }
+    .carousel-arrow.prev { left: 12px; }
+    .carousel-arrow.next { right: 12px; }
+    .carousel-dots { margin-top: 40px; }
 }
 
 @media (max-width: 600px) {
     section { padding: 90px 20px; }
     .navbar { padding: 25px 20px; }
     .logo { font-size: 14px; letter-spacing: 3px; }
-    .hero { min-height: 760px; padding-top: 100px; }
-    .hero h1 { font-size: 36px; letter-spacing: -1px; }
+    .hero { padding-top: 90px; }
+    .hero h1 { font-size: 34px; letter-spacing: -1px; }
     .hero-buttons { flex-direction: column; width: 100%; }
     .hero-buttons a { width: 100%; }
-    .carousel-wrapper { height: 220px; }
-    .carousel-card.center { width: 280px; height: 175px; }
+    .carousel-wrapper { height: 260px; }
+    .carousel-card.center { width: 300px; height: 190px; }
     .carousel-card.side { display: none; }
-    .carousel-arrow.prev { left: 6px; }
-    .carousel-arrow.next { right: 6px; }
+    .carousel-arrow.prev { left: 8px; }
+    .carousel-arrow.next { right: 8px; }
+    .carousel-dots { margin-top: 30px; }
     .about-left img { height: 400px; }
     .stats { flex-direction: column; gap: 20px; }
     .services-grid { grid-template-columns: 1fr; }

@@ -27,7 +27,7 @@ window.addEventListener("load", () => {
 });
 
 /* =====================================================
-   HERO VIDEO CAROUSEL (smooth slide)
+   HERO VIDEO CAROUSEL — плавный сдвиг без исчезновения
 ===================================================== */
 
 const heroVideos = works.filter(w => w.type === "video");
@@ -90,22 +90,22 @@ function setInitialVideos() {
 }
 
 function getOffset() {
-    const centerW = cardCenter.offsetWidth || 560;
-    return Math.round(centerW * 0.78);
+    const centerW = cardCenter.offsetWidth || 980;
+    return Math.round(centerW * 0.72);
 }
 
 function applyPositions() {
     const offset = getOffset();
-    gsap.set(cardLeft, { x: -offset, scale: 0.82, opacity: 0.5, filter: "brightness(0.65)", zIndex: 2 });
-    gsap.set(cardCenter, { x: 0, scale: 1, opacity: 1, filter: "brightness(1)", zIndex: 5 });
-    gsap.set(cardRight, { x: offset, scale: 0.82, opacity: 0.5, filter: "brightness(0.65)", zIndex: 2 });
+    gsap.set(cardLeft,  { x: -offset, scale: 0.78, opacity: 0.55, filter: "brightness(0.6)", zIndex: 2 });
+    gsap.set(cardCenter,{ x: 0,       scale: 1,    opacity: 1,    filter: "brightness(1)",   zIndex: 5 });
+    gsap.set(cardRight, { x:  offset, scale: 0.78, opacity: 0.55, filter: "brightness(0.6)", zIndex: 2 });
 }
 
 function slide(direction) {
     if (isAnimating || heroVideos.length < 2) return;
     isAnimating = true;
 
-    const duration = 0.65;
+    const duration = 0.7;
     const ease = "power2.inOut";
     const offset = getOffset();
 
@@ -123,22 +123,25 @@ function slide(direction) {
                 isAnimating = false;
             }
         })
+        /* Левая уезжает дальше влево, но остаётся чуть видимой */
         .to(cardLeft, {
-            x: -offset * 1.6,
-            opacity: 0,
-            scale: 0.7,
+            x: -offset * 1.55,
+            opacity: 0.25,
+            scale: 0.65,
             duration,
             ease
         }, 0)
+        /* Центр → влево (затемнённый) */
         .to(cardCenter, {
             x: -offset,
-            scale: 0.82,
-            opacity: 0.5,
-            filter: "brightness(0.65)",
+            scale: 0.78,
+            opacity: 0.55,
+            filter: "brightness(0.6)",
             zIndex: 2,
             duration,
             ease
         }, 0)
+        /* Правая → в центр */
         .to(cardRight, {
             x: 0,
             scale: 1,
@@ -148,18 +151,24 @@ function slide(direction) {
             duration,
             ease
         }, 0)
+        /* Новая правая появляется справа (не из ниоткуда, а из-за края) */
         .add(() => {
             setVideo(cardLeft, newRightWork, false);
-            gsap.set(cardLeft, { x: offset * 1.6, opacity: 0, scale: 0.7 });
-        }, duration * 0.4)
+            gsap.set(cardLeft, {
+                x: offset * 1.55,
+                opacity: 0.25,
+                scale: 0.65,
+                filter: "brightness(0.6)",
+                zIndex: 1
+            });
+        }, duration * 0.35)
         .to(cardLeft, {
             x: offset,
-            opacity: 0.5,
-            scale: 0.82,
-            filter: "brightness(0.65)",
-            duration: duration * 0.6,
+            opacity: 0.55,
+            scale: 0.78,
+            duration: duration * 0.65,
             ease
-        }, duration * 0.4);
+        }, duration * 0.35);
 
     } else {
         const newLeftWork = getWork(currentHeroIndex - 2);
@@ -176,17 +185,17 @@ function slide(direction) {
             }
         })
         .to(cardRight, {
-            x: offset * 1.6,
-            opacity: 0,
-            scale: 0.7,
+            x: offset * 1.55,
+            opacity: 0.25,
+            scale: 0.65,
             duration,
             ease
         }, 0)
         .to(cardCenter, {
             x: offset,
-            scale: 0.82,
-            opacity: 0.5,
-            filter: "brightness(0.65)",
+            scale: 0.78,
+            opacity: 0.55,
+            filter: "brightness(0.6)",
             zIndex: 2,
             duration,
             ease
@@ -202,26 +211,26 @@ function slide(direction) {
         }, 0)
         .add(() => {
             setVideo(cardRight, newLeftWork, false);
-            gsap.set(cardRight, { x: -offset * 1.6, opacity: 0, scale: 0.7 });
-        }, duration * 0.4)
+            gsap.set(cardRight, {
+                x: -offset * 1.55,
+                opacity: 0.25,
+                scale: 0.65,
+                filter: "brightness(0.6)",
+                zIndex: 1
+            });
+        }, duration * 0.35)
         .to(cardRight, {
             x: -offset,
-            opacity: 0.5,
-            scale: 0.82,
-            filter: "brightness(0.65)",
-            duration: duration * 0.6,
+            opacity: 0.55,
+            scale: 0.78,
+            duration: duration * 0.65,
             ease
-        }, duration * 0.4);
+        }, duration * 0.35);
     }
 }
 
-function nextSlide() {
-    slide("next");
-}
-
-function prevSlide() {
-    slide("prev");
-}
+function nextSlide() { slide("next"); }
+function prevSlide() { slide("prev"); }
 
 function goTo(index) {
     if (isAnimating || index === currentHeroIndex) return;
@@ -235,7 +244,7 @@ function goTo(index) {
             if (steps <= 0) return;
             slide("next");
             steps--;
-            if (steps > 0) setTimeout(run, 700);
+            if (steps > 0) setTimeout(run, 750);
         };
         run();
     } else {
@@ -244,7 +253,7 @@ function goTo(index) {
             if (steps <= 0) return;
             slide("prev");
             steps--;
-            if (steps > 0) setTimeout(run, 700);
+            if (steps > 0) setTimeout(run, 750);
         };
         run();
     }
@@ -257,7 +266,6 @@ if (heroVideos.length > 0) {
 
     nextBtn.addEventListener("click", nextSlide);
     prevBtn.addEventListener("click", prevSlide);
-
     cardLeft.addEventListener("click", prevSlide);
     cardRight.addEventListener("click", nextSlide);
 
@@ -276,7 +284,6 @@ if (heroVideos.length > 0) {
 
 function renderWorks() {
     portfolioGrid.innerHTML = "";
-
     const items = currentWorks.slice(0, visibleCount);
 
     items.forEach(work => {
@@ -284,7 +291,6 @@ function renderWorks() {
         card.className = "work-card";
 
         let media = "";
-
         if (work.type === "video") {
             media = `
                 <video muted loop playsinline preload="metadata"
@@ -294,9 +300,7 @@ function renderWorks() {
                 <div class="video-indicator">▶</div>
             `;
         } else {
-            media = `
-                <img loading="lazy" src="${work.thumbnail || work.image}" alt="${work.title}">
-            `;
+            media = `<img loading="lazy" src="${work.thumbnail || work.image}" alt="${work.title}">`;
         }
 
         card.innerHTML = `
@@ -319,11 +323,7 @@ function renderWorks() {
 }
 
 function updateLoadButton() {
-    if (visibleCount >= currentWorks.length) {
-        loadMoreBtn.style.display = "none";
-    } else {
-        loadMoreBtn.style.display = "block";
-    }
+    loadMoreBtn.style.display = visibleCount >= currentWorks.length ? "none" : "block";
 }
 
 loadMoreBtn.addEventListener("click", () => {
@@ -346,26 +346,21 @@ document.querySelectorAll(".filters button").forEach(button => {
 
 function applyFilters() {
     const search = searchInput.value.toLowerCase();
-
     currentWorks = works.filter(work => {
         const categoryMatch =
             currentFilter === "all" ||
             work.type === currentFilter ||
             work.category === currentFilter;
-
         const searchMatch =
             work.title.toLowerCase().includes(search) ||
             work.tags.join(" ").toLowerCase().includes(search);
-
         return categoryMatch && searchMatch;
     });
-
     visibleCount = 6;
     renderWorks();
 }
 
 searchInput.addEventListener("input", applyFilters);
-
 renderWorks();
 
 /* =====================================================
@@ -378,17 +373,11 @@ const closeModal = document.getElementById("closeModal");
 
 function openModal(work) {
     modalBody.innerHTML = "";
-
     if (work.type === "video") {
-        modalBody.innerHTML = `
-            <video controls autoplay playsinline src="${work.video}"></video>
-        `;
+        modalBody.innerHTML = `<video controls autoplay playsinline src="${work.video}"></video>`;
     } else {
-        modalBody.innerHTML = `
-            <img src="${work.image || work.thumbnail}" alt="${work.title}">
-        `;
+        modalBody.innerHTML = `<img src="${work.image || work.thumbnail}" alt="${work.title}">`;
     }
-
     modal.classList.add("active");
     document.body.style.overflow = "hidden";
 }
@@ -401,7 +390,6 @@ function hideModal() {
 
 closeModal.addEventListener("click", hideModal);
 document.querySelector(".modal-overlay").addEventListener("click", hideModal);
-
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") hideModal();
 });
@@ -413,14 +401,9 @@ document.addEventListener("keydown", (e) => {
 const menuBtn = document.querySelector(".menu-btn");
 const mobileMenu = document.getElementById("mobileMenu");
 
-menuBtn.addEventListener("click", () => {
-    mobileMenu.classList.toggle("active");
-});
-
+menuBtn.addEventListener("click", () => mobileMenu.classList.toggle("active"));
 document.querySelectorAll(".mobile-menu a").forEach(link => {
-    link.addEventListener("click", () => {
-        mobileMenu.classList.remove("active");
-    });
+    link.addEventListener("click", () => mobileMenu.classList.remove("active"));
 });
 
 /* =====================================================
@@ -430,11 +413,7 @@ document.querySelectorAll(".mobile-menu a").forEach(link => {
 const cursor = document.getElementById("cursor");
 
 document.addEventListener("mousemove", (e) => {
-    gsap.to(cursor, {
-        x: e.clientX,
-        y: e.clientY,
-        duration: 0.2
-    });
+    gsap.to(cursor, { x: e.clientX, y: e.clientY, duration: 0.2 });
 });
 
 document.querySelectorAll("a, button, .work-card, input, textarea, .carousel-card, .carousel-arrow").forEach(el => {
@@ -465,7 +444,6 @@ document.addEventListener("mouseleave", (e) => {
 gsap.registerPlugin(ScrollTrigger);
 
 const heroTimeline = gsap.timeline();
-
 heroTimeline
     .to(".subtitle", { opacity: 1, y: -15, duration: 1, ease: "power3.out" })
     .to(".hero h1", { opacity: 1, y: -15, duration: 1.1, ease: "power4.out" }, "-=.6")
@@ -478,10 +456,7 @@ gsap.utils.toArray("section:not(.hero)").forEach(section => {
         y: 60,
         duration: 1,
         ease: "power3.out",
-        scrollTrigger: {
-            trigger: section,
-            start: "top 85%"
-        }
+        scrollTrigger: { trigger: section, start: "top 85%" }
     });
 });
 
@@ -512,10 +487,7 @@ gsap.utils.toArray(".service-card").forEach(card => {
         opacity: 0,
         y: 50,
         duration: 0.9,
-        scrollTrigger: {
-            trigger: card,
-            start: "top 88%"
-        }
+        scrollTrigger: { trigger: card, start: "top 88%" }
     });
 });
 
@@ -523,19 +495,12 @@ gsap.from(".cta-content", {
     scale: 0.92,
     opacity: 0,
     duration: 1.1,
-    scrollTrigger: {
-        trigger: ".cta",
-        start: "top 75%"
-    }
+    scrollTrigger: { trigger: ".cta", start: "top 75%" }
 });
 
 window.addEventListener("scroll", () => {
     const nav = document.querySelector(".navbar");
-    if (window.scrollY > 50) {
-        nav.style.background = "rgba(5,5,5,.75)";
-    } else {
-        nav.style.background = "transparent";
-    }
+    nav.style.background = window.scrollY > 50 ? "rgba(5,5,5,.75)" : "transparent";
 });
 
 document.querySelectorAll(".primary, .secondary").forEach(button => {
@@ -545,7 +510,6 @@ document.querySelectorAll(".primary, .secondary").forEach(button => {
         const y = e.clientY - rect.top - rect.height / 2;
         gsap.to(button, { x: x * 0.12, y: y * 0.12, duration: 0.3 });
     });
-
     button.addEventListener("mouseleave", () => {
         gsap.to(button, { x: 0, y: 0, duration: 0.5 });
     });
