@@ -11,9 +11,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -32,12 +32,12 @@
             <a href="#services">Услуги</a>
             <a href="#contact">Контакты</a>
         </nav>
-        <button class="menu-btn">☰</button>
+        <button class="menu-btn" aria-label="Меню">☰</button>
     </header>
 
     <!-- HERO -->
     <section class="hero">
-        <video autoplay muted loop playsinline id="heroVideo">
+        <video autoplay muted loop playsinline id="heroVideo" poster="assets/images/hero.jpg">
             <source src="assets/videos/hero.mp4" type="video/mp4">
         </video>
         <div class="overlay"></div>
@@ -57,11 +57,11 @@
     <!-- ABOUT -->
     <section id="about" class="about">
         <div class="about-left">
-            <img src="assets/images/about.jpg" alt="about">
+            <img src="assets/images/about.jpg" alt="Владислав">
         </div>
         <div class="about-right">
             <span>ОБО МНЕ</span>
-            <h2>Создаю визуальные истории, которые цепляют.</h2>
+            <h2>Создаю визуальные истории,<br>которые цепляют.</h2>
             <p>Я занимаюсь видеосъёмкой и фотографией, помогая брендам, компаниям и людям рассказывать свои истории через современный визуальный язык.</p>
             <div class="stats">
                 <div>
@@ -157,9 +157,9 @@
             </div>
         </div>
         <form class="contact-form">
-            <input type="text" placeholder="Ваше имя">
-            <input type="email" placeholder="Email">
-            <textarea rows="6" placeholder="Расскажите о проекте"></textarea>
+            <input type="text" placeholder="Ваше имя" required>
+            <input type="email" placeholder="Email" required>
+            <textarea rows="6" placeholder="Расскажите о проекте" required></textarea>
             <button type="submit">Отправить</button>
         </form>
     </section>
