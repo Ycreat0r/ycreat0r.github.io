@@ -2,1208 +2,412 @@
    PORTFOLIO WEBSITE SCRIPT
 ===================================================== */
 
-
-/* =====================================================
-   GLOBAL VARIABLES
-===================================================== */
-
-
 let currentWorks = [...works];
-
 let visibleCount = 6;
-
 let currentFilter = "all";
 
-
-
-const portfolioGrid =
-document.getElementById("portfolioGrid");
-
-
-const searchInput =
-document.getElementById("searchInput");
-
-
-const loadMoreBtn =
-document.getElementById("loadMore");
-
-
+const portfolioGrid = document.getElementById("portfolioGrid");
+const searchInput = document.getElementById("searchInput");
+const loadMoreBtn = document.getElementById("loadMore");
 
 /* =====================================================
    LOADER
 ===================================================== */
 
-
-window.addEventListener("load",()=>{
-
-
-    const loader =
-    document.getElementById("loader");
-
-
-    gsap.to(loader,{
-
-        opacity:0,
-
-        duration:1,
-
-        delay:.5,
-
-        onComplete:()=>{
-
-            loader.style.display="none";
-
+window.addEventListener("load", () => {
+    const loader = document.getElementById("loader");
+    gsap.to(loader, {
+        opacity: 0,
+        duration: 1,
+        delay: 0.4,
+        onComplete: () => {
+            loader.style.display = "none";
         }
-
     });
-
-
 });
-
-
 
 /* =====================================================
-   LENIS SMOOTH SCROLL
+   HERO VIDEO CAROUSEL
 ===================================================== */
 
+const heroVideos = works.filter(w => w.type === "video");
+let currentHeroIndex = 0;
 
-const lenis =
-new Lenis({
+const cards = {
+    left: document.querySelector(".carousel-card.left"),
+    center: document.querySelector(".carousel-card.center"),
+    right: document.querySelector(".carousel-card.right")
+};
 
-    duration:1.2,
+const dotsContainer = document.querySelector(".carousel-dots");
+const prevBtn = document.querySelector(".carousel-arrow.prev");
+const nextBtn = document.querySelector(".carousel-arrow.next");
 
-    smooth:true
-
-});
-
-
-function raf(time){
-
-    lenis.raf(time);
-
-    requestAnimationFrame(raf);
-
+function getVideoSrc(index) {
+    const i = ((index % heroVideos.length) + heroVideos.length) % heroVideos.length;
+    return heroVideos[i];
 }
 
+function setCardVideo(card, work, shouldPlay = false) {
+    const video = card.querySelector("video");
+    if (!video || !work) return;
 
-requestAnimationFrame(raf);
+    if (video.dataset.src === work.video) {
+        if (shouldPlay) {
+            video.play().catch(() => {});
+        } else {
+            video.pause();
+        }
+        return;
+    }
 
+    video.pause();
+    video.src = work.video;
+    video.dataset.src = work.video;
+    video.load();
 
+    if (shouldPlay) {
+        video.play().catch(() => {});
+    }
+}
+
+function updateCarousel() {
+    const prev = getVideoSrc(currentHeroIndex - 1);
+    const current = getVideoSrc(currentHeroIndex);
+    const next = getVideoSrc(currentHeroIndex + 1);
+
+    setCardVideo(cards.left, prev, false);
+    setCardVideo(cards.center, current, true);
+    setCardVideo(cards.right, next, false);
+
+    document.querySelectorAll(".carousel-dots button").forEach((dot, i) => {
+        dot.classList.toggle("active", i === currentHeroIndex);
+    });
+}
+
+function createDots() {
+    dotsContainer.innerHTML = "";
+    heroVideos.forEach((_, i) => {
+        const btn = document.createElement("button");
+        btn.setAttribute("aria-label", `Видео ${i + 1}`);
+        if (i === 0) btn.classList.add("active");
+        btn.addEventListener("click", () => {
+            currentHeroIndex = i;
+            updateCarousel();
+        });
+        dotsContainer.appendChild(btn);
+    });
+}
+
+function nextSlide() {
+    currentHeroIndex = (currentHeroIndex + 1) % heroVideos.length;
+    updateCarousel();
+}
+
+function prevSlide() {
+    currentHeroIndex = (currentHeroIndex - 1 + heroVideos.length) % heroVideos.length;
+    updateCarousel();
+}
+
+if (heroVideos.length > 0) {
+    createDots();
+    updateCarousel();
+
+    nextBtn.addEventListener("click", nextSlide);
+    prevBtn.addEventListener("click", prevSlide);
+
+    cards.left.addEventListener("click", prevSlide);
+    cards.right.addEventListener("click", nextSlide);
+
+    setInterval(nextSlide, 8000);
+}
 
 /* =====================================================
    RENDER PORTFOLIO
 ===================================================== */
 
+function renderWorks() {
+    portfolioGrid.innerHTML = "";
 
-function renderWorks(){
+    const items = currentWorks.slice(0, visibleCount);
 
+    items.forEach(work => {
+        const card = document.createElement("div");
+        card.className = "work-card";
 
-    portfolioGrid.innerHTML="";
+        let media = "";
 
-
-    const items =
-    currentWorks.slice(
-        0,
-        visibleCount
-    );
-
-
-
-    items.forEach(work=>{
-
-
-        const card =
-        document.createElement("div");
-
-
-        card.className=
-        "work-card";
-
-
-
-        let media="";
-
-
-
-        if(work.type==="video"){
-
-
-            media=`
-
-            <video
-
-            muted
-
-            loop
-
-            autoplay
-
-            playsinline
-
-            preload="metadata"
-
-            src="${work.video}"
-
-            poster="${work.thumbnail}">
-
-            </video>
-
-
-            <div class="video-indicator">
-
-                ▶
-
-            </div>
-
+        if (work.type === "video") {
+            media = `
+                <video muted loop playsinline preload="metadata"
+                    src="${work.video}"
+                    poster="${work.thumbnail || ''}">
+                </video>
+                <div class="video-indicator">▶</div>
             `;
-
-
+        } else {
+            media = `
+                <img loading="lazy" src="${work.thumbnail || work.image}" alt="${work.title}">
+            `;
         }
 
-        else{
-
-
-            media=`
-
-            <img
-
-            loading="lazy"
-
-            src="${work.thumbnail}"
-
-            alt="${work.title}">
-
-            `;
-
-
-        }
-
-
-
-        card.innerHTML=`
-
+        card.innerHTML = `
             ${media}
-
-
             <div class="work-info">
-
-
-                <h3>
-
-                ${work.title}
-
-                </h3>
-
-
-                <p>
-
-                ${work.year}
-
-                • ${work.description}
-
-                </p>
-
-
-
+                <h3>${work.title}</h3>
+                <p>${work.year} • ${work.description}</p>
                 <div class="work-tags">
-
-
-                ${work.tags.map(tag=>`
-
-                    <span>
-
-                    ${tag}
-
-                    </span>
-
-                `).join("")}
-
-
+                    ${work.tags.map(tag => `<span>${tag}</span>`).join("")}
                 </div>
-
-
             </div>
-
-
         `;
 
-
-
-        card.addEventListener(
-            "click",
-            ()=>openModal(work)
-        );
-
-
-
+        card.addEventListener("click", () => openModal(work));
         portfolioGrid.appendChild(card);
-
-
     });
-
-
 
     animateCards();
-
-
     updateLoadButton();
-
-
 }
 
-
-
-
-/* =====================================================
-   LOAD MORE
-===================================================== */
-
-
-function updateLoadButton(){
-
-
-    if(
-
-        visibleCount >= currentWorks.length
-
-    ){
-
-        loadMoreBtn.style.display="none";
-
+function updateLoadButton() {
+    if (visibleCount >= currentWorks.length) {
+        loadMoreBtn.style.display = "none";
+    } else {
+        loadMoreBtn.style.display = "block";
     }
-
-    else{
-
-        loadMoreBtn.style.display="block";
-
-    }
-
-
 }
 
-
-
-loadMoreBtn.addEventListener(
-"click",
-()=>{
-
-
+loadMoreBtn.addEventListener("click", () => {
     visibleCount += 3;
-
-
     renderWorks();
-
-
 });
-
-
 
 /* =====================================================
-   FILTERS
+   FILTERS + SEARCH
 ===================================================== */
 
-
-document
-.querySelectorAll(".filters button")
-.forEach(button=>{
-
-
-    button.addEventListener(
-    "click",
-    ()=>{
-
-
-        document
-        .querySelectorAll(".filters button")
-        .forEach(btn=>
-
-            btn.classList.remove("active")
-
-        );
-
-
+document.querySelectorAll(".filters button").forEach(button => {
+    button.addEventListener("click", () => {
+        document.querySelectorAll(".filters button").forEach(btn => btn.classList.remove("active"));
         button.classList.add("active");
-
-
-
-        currentFilter =
-        button.dataset.filter;
-
-
-
+        currentFilter = button.dataset.filter;
         applyFilters();
-
-
     });
-
-
 });
 
+function applyFilters() {
+    const search = searchInput.value.toLowerCase();
 
-
-function applyFilters(){
-
-
-    const search =
-    searchInput.value
-    .toLowerCase();
-
-
-
-    currentWorks =
-    works.filter(work=>{
-
-
+    currentWorks = works.filter(work => {
         const categoryMatch =
-
-        currentFilter==="all"
-
-        ||
-
-        work.type===currentFilter
-
-        ||
-
-        work.category===currentFilter;
-
-
+            currentFilter === "all" ||
+            work.type === currentFilter ||
+            work.category === currentFilter;
 
         const searchMatch =
+            work.title.toLowerCase().includes(search) ||
+            work.tags.join(" ").toLowerCase().includes(search);
 
-        work.title
-        .toLowerCase()
-        .includes(search)
-
-        ||
-
-        work.tags
-        .join(" ")
-        .toLowerCase()
-        .includes(search);
-
-
-
-        return (
-
-            categoryMatch
-
-            &&
-
-            searchMatch
-
-        );
-
-
+        return categoryMatch && searchMatch;
     });
 
-
-
-    visibleCount=6;
-
-
+    visibleCount = 6;
     renderWorks();
-
-
 }
 
-
-
-searchInput.addEventListener(
-"input",
-applyFilters
-);
-
-
+searchInput.addEventListener("input", applyFilters);
 
 /* =====================================================
-   INIT
+   INIT PORTFOLIO
 ===================================================== */
-
 
 renderWorks();
 
 /* =====================================================
-   MODAL / LIGHTBOX
+   MODAL
 ===================================================== */
 
+const modal = document.getElementById("modal");
+const modalBody = document.getElementById("modalBody");
+const closeModal = document.getElementById("closeModal");
 
-const modal =
-document.getElementById("modal");
+function openModal(work) {
+    modalBody.innerHTML = "";
 
-
-const modalBody =
-document.getElementById("modalBody");
-
-
-const closeModal =
-document.getElementById("closeModal");
-
-
-
-function openModal(work){
-
-
-    modalBody.innerHTML="";
-
-
-    if(work.type==="video"){
-
-
-        modalBody.innerHTML=`
-
-        <video
-
-        controls
-
-        autoplay
-
-        playsinline
-
-        src="${work.video}">
-
-        </video>
-
+    if (work.type === "video") {
+        modalBody.innerHTML = `
+            <video controls autoplay playsinline src="${work.video}"></video>
         `;
-
-
-    }
-
-    else{
-
-
-        modalBody.innerHTML=`
-
-        <img
-
-        src="${work.image}"
-
-        alt="${work.title}">
-
+    } else {
+        modalBody.innerHTML = `
+            <img src="${work.image || work.thumbnail}" alt="${work.title}">
         `;
-
-
     }
-
-
 
     modal.classList.add("active");
-
-    document.body.style.overflow="hidden";
-
-
+    document.body.style.overflow = "hidden";
 }
 
-
-
-function hideModal(){
-
-
+function hideModal() {
     modal.classList.remove("active");
-
-
-    modalBody.innerHTML="";
-
-
-    document.body.style.overflow="";
-
-
+    modalBody.innerHTML = "";
+    document.body.style.overflow = "";
 }
 
+closeModal.addEventListener("click", hideModal);
+document.querySelector(".modal-overlay").addEventListener("click", hideModal);
 
-
-closeModal.addEventListener(
-"click",
-hideModal
-);
-
-
-
-document
-.querySelector(".modal-overlay")
-.addEventListener(
-"click",
-hideModal
-);
-
-
-
-document.addEventListener(
-"keydown",
-(e)=>{
-
-
-    if(e.key==="Escape"){
-
-        hideModal();
-
-    }
-
-
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") hideModal();
 });
-
-
-
-
 
 /* =====================================================
    MOBILE MENU
 ===================================================== */
 
+const menuBtn = document.querySelector(".menu-btn");
+const mobileMenu = document.getElementById("mobileMenu");
 
-const menuBtn =
-document.querySelector(".menu-btn");
-
-
-const mobileMenu =
-document.getElementById("mobileMenu");
-
-
-
-menuBtn.addEventListener(
-"click",
-()=>{
-
-
-    mobileMenu
-    .classList.toggle("active");
-
-
+menuBtn.addEventListener("click", () => {
+    mobileMenu.classList.toggle("active");
 });
 
-
-
-document
-.querySelectorAll(".mobile-menu a")
-.forEach(link=>{
-
-
-    link.addEventListener(
-    "click",
-    ()=>{
-
-
-        mobileMenu
-        .classList.remove("active");
-
-
+document.querySelectorAll(".mobile-menu a").forEach(link => {
+    link.addEventListener("click", () => {
+        mobileMenu.classList.remove("active");
     });
-
-
 });
-
-
-
 
 /* =====================================================
    CUSTOM CURSOR
 ===================================================== */
 
+const cursor = document.getElementById("cursor");
 
-const cursor =
-document.getElementById("cursor");
-
-
-
-document.addEventListener(
-"mousemove",
-(e)=>{
-
-
-    gsap.to(cursor,{
-
-        x:e.clientX,
-
-        y:e.clientY,
-
-        duration:.25
-
+document.addEventListener("mousemove", (e) => {
+    gsap.to(cursor, {
+        x: e.clientX,
+        y: e.clientY,
+        duration: 0.2
     });
-
-
 });
 
-
-
-const hoverElements =
-document.querySelectorAll(
-
-"a,button,.work-card,input,textarea"
-
-);
-
-
-
-hoverElements.forEach(element=>{
-
-
-    element.addEventListener(
-    "mouseenter",
-    ()=>{
-
-
-        cursor
-        .classList
-        .add("cursor-hover");
-
-
-    });
-
-
-
-    element.addEventListener(
-    "mouseleave",
-    ()=>{
-
-
-        cursor
-        .classList
-        .remove("cursor-hover");
-
-
-    });
-
-
+document.querySelectorAll("a, button, .work-card, input, textarea, .carousel-card, .carousel-arrow").forEach(el => {
+    el.addEventListener("mouseenter", () => cursor.classList.add("cursor-hover"));
+    el.addEventListener("mouseleave", () => cursor.classList.remove("cursor-hover"));
 });
-
-
 
 /* =====================================================
-   VIDEO HOVER PREVIEW
+   VIDEO HOVER IN PORTFOLIO
 ===================================================== */
 
-
-document
-.addEventListener(
-"mouseenter",
-(e)=>{
-
-
-    if(
-        e.target.tagName==="VIDEO"
-    ){
-
-        e.target.play();
-
+document.addEventListener("mouseenter", (e) => {
+    if (e.target.tagName === "VIDEO" && e.target.closest(".work-card")) {
+        e.target.play().catch(() => {});
     }
+}, true);
 
-
-},
-true);
-
-
-
-document
-.addEventListener(
-"mouseleave",
-(e)=>{
-
-
-    if(
-        e.target.tagName==="VIDEO"
-    ){
-
+document.addEventListener("mouseleave", (e) => {
+    if (e.target.tagName === "VIDEO" && e.target.closest(".work-card")) {
         e.target.pause();
-
     }
-
-
-},
-true);
+}, true);
 
 /* =====================================================
    GSAP ANIMATIONS
 ===================================================== */
 
+gsap.registerPlugin(ScrollTrigger);
 
-gsap.registerPlugin(
-    ScrollTrigger
-);
-
-
-
-/* =====================================================
-   HERO INTRO
-===================================================== */
-
-
-const heroTimeline =
-gsap.timeline();
-
-
+const heroTimeline = gsap.timeline();
 
 heroTimeline
+    .to(".subtitle", { opacity: 1, y: -15, duration: 1, ease: "power3.out" })
+    .to(".hero h1", { opacity: 1, y: -15, duration: 1.1, ease: "power4.out" }, "-=.6")
+    .to(".hero p", { opacity: 1, y: -15, duration: 0.9, ease: "power3.out" }, "-=.7")
+    .to(".hero-buttons", { opacity: 1, y: -15, duration: 0.9, ease: "power3.out" }, "-=.6");
 
-.to(
-".subtitle",
-{
+gsap.utils.toArray("section:not(.hero)").forEach(section => {
+    gsap.from(section, {
+        opacity: 0,
+        y: 60,
+        duration: 1,
+        ease: "power3.out",
+        scrollTrigger: {
+            trigger: section,
+            start: "top 85%"
+        }
+    });
+});
 
-    opacity:1,
+gsap.to(".about-left img", {
+    y: -60,
+    ease: "none",
+    scrollTrigger: {
+        trigger: ".about",
+        start: "top bottom",
+        end: "bottom top",
+        scrub: true
+    }
+});
 
-    y:-20,
-
-    duration:1,
-
-    ease:"power3.out"
-
+function animateCards() {
+    gsap.from(".work-card", {
+        opacity: 0,
+        y: 40,
+        scale: 0.96,
+        stagger: 0.07,
+        duration: 0.7,
+        ease: "power3.out"
+    });
 }
 
-)
-
-
-.to(
-".hero h1",
-{
-
-    opacity:1,
-
-    y:-20,
-
-    duration:1.2,
-
-    ease:"power4.out"
-
-},
-
-"-=.6"
-
-)
-
-
-.to(
-".hero p",
-{
-
-    opacity:1,
-
-    y:-20,
-
-    duration:1,
-
-    ease:"power3.out"
-
-},
-
-"-=.7"
-
-)
-
-
-.to(
-".hero-buttons",
-{
-
-    opacity:1,
-
-    y:-20,
-
-    duration:1,
-
-    ease:"power3.out"
-
-},
-
-"-=.6"
-
-);
-
-
-
-
-
-/* =====================================================
-   SCROLL REVEAL
-===================================================== */
-
-
-gsap.utils.toArray(
-"section"
-)
-.forEach(section=>{
-
-
-    gsap.from(
-    section,
-    {
-
-        opacity:0,
-
-        y:80,
-
-        duration:1,
-
-        ease:"power3.out",
-
-        scrollTrigger:{
-
-            trigger:section,
-
-            start:"top 80%",
-
-
+gsap.utils.toArray(".service-card").forEach(card => {
+    gsap.from(card, {
+        opacity: 0,
+        y: 50,
+        duration: 0.9,
+        scrollTrigger: {
+            trigger: card,
+            start: "top 88%"
         }
-
-
     });
-
-
 });
 
-
-
-
-
-/* =====================================================
-   ABOUT IMAGE PARALLAX
-===================================================== */
-
-
-gsap.to(
-".about-left img",
-{
-
-    y:-80,
-
-    ease:"none",
-
-    scrollTrigger:{
-
-        trigger:".about",
-
-        start:"top bottom",
-
-        end:"bottom top",
-
-        scrub:true
-
+gsap.from(".cta-content", {
+    scale: 0.92,
+    opacity: 0,
+    duration: 1.1,
+    scrollTrigger: {
+        trigger: ".cta",
+        start: "top 75%"
     }
-
-
 });
 
-
-
-
-
-/* =====================================================
-   PORTFOLIO CARD ANIMATION
-===================================================== */
-
-
-function animateCards(){
-
-
-    gsap.from(
-    ".work-card",
-    {
-
-        opacity:0,
-
-        y:50,
-
-        scale:.95,
-
-        stagger:.08,
-
-        duration:.8,
-
-        ease:"power3.out"
-
-    });
-
-
-}
-
-
-
-
-
-/* =====================================================
-   SERVICES FLOAT
-===================================================== */
-
-
-gsap.utils.toArray(
-".service-card"
-)
-.forEach(card=>{
-
-
-    gsap.from(
-    card,
-    {
-
-        opacity:0,
-
-        y:60,
-
-        duration:1,
-
-        scrollTrigger:{
-
-            trigger:card,
-
-            start:"top 85%"
-
-        }
-
-
-    });
-
-
-
-});
-
-
-
-
-
-/* =====================================================
-   CTA ANIMATION
-===================================================== */
-
-
-gsap.from(
-".cta-content",
-{
-
-    scale:.9,
-
-    opacity:0,
-
-    duration:1.2,
-
-    scrollTrigger:{
-
-        trigger:".cta",
-
-        start:"top 70%"
-
+window.addEventListener("scroll", () => {
+    const nav = document.querySelector(".navbar");
+    if (window.scrollY > 50) {
+        nav.style.background = "rgba(5,5,5,.75)";
+    } else {
+        nav.style.background = "transparent";
     }
-
-
 });
 
+document.querySelectorAll(".primary, .secondary").forEach(button => {
+    button.addEventListener("mousemove", e => {
+        const rect = button.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        gsap.to(button, { x: x * 0.12, y: y * 0.12, duration: 0.3 });
+    });
 
-
-
-
-/* =====================================================
-   NAVBAR BLUR ON SCROLL
-===================================================== */
-
-
-window.addEventListener(
-"scroll",
-()=>{
-
-
-    const nav =
-    document.querySelector(".navbar");
-
-
-    if(window.scrollY>50){
-
-
-        nav.style.background=
-
-        "rgba(5,5,5,.7)";
-
-
-    }
-
-    else{
-
-
-        nav.style.background=
-
-        "transparent";
-
-
-    }
-
-
+    button.addEventListener("mouseleave", () => {
+        gsap.to(button, { x: 0, y: 0, duration: 0.5 });
+    });
 });
 
-
-
-
-
-/* =====================================================
-   MAGNETIC BUTTON EFFECT
-===================================================== */
-
-
-document
-.querySelectorAll(
-".primary,.secondary"
-)
-.forEach(button=>{
-
-
-    button.addEventListener(
-    "mousemove",
-    e=>{
-
-
-        const rect =
-        button.getBoundingClientRect();
-
-
-        const x =
-        e.clientX - rect.left - rect.width/2;
-
-
-        const y =
-        e.clientY - rect.top - rect.height/2;
-
-
-
-        gsap.to(
-        button,
-        {
-
-            x:x*.15,
-
-            y:y*.15,
-
-            duration:.3
-
-
-        });
-
-
-    });
-
-
-
-    button.addEventListener(
-    "mouseleave",
-    ()=>{
-
-
-        gsap.to(
-        button,
-        {
-
-            x:0,
-
-            y:0,
-
-            duration:.5
-
-
-        });
-
-
-    });
-
-
-});
-
-
-
-
-
-/* =====================================================
-   IMAGE TILT EFFECT
-===================================================== */
-
-
-document
-.querySelectorAll(
-".work-card"
-)
-.forEach(card=>{
-
-
-    card.addEventListener(
-    "mousemove",
-    e=>{
-
-
-        const rect =
-        card.getBoundingClientRect();
-
-
-
-        const x =
-        e.clientX - rect.left;
-
-
-        const y =
-        e.clientY - rect.top;
-
-
-
-        const rotateX =
-        (y-rect.height/2)/20;
-
-
-        const rotateY =
-        (rect.width/2-x)/20;
-
-
-
-        gsap.to(
-        card,
-        {
-
-            rotateX,
-
-            rotateY,
-
-            duration:.3
-
-        });
-
-
-    });
-
-
-
-    card.addEventListener(
-    "mouseleave",
-    ()=>{
-
-
-        gsap.to(
-        card,
-        {
-
-            rotateX:0,
-
-            rotateY:0,
-
-            duration:.5
-
-        });
-
-
-    });
-
-
-});
-
-
-
-/* =====================================================
-   CONTACT FORM DEMO
-===================================================== */
-
-
-document
-.querySelector(".contact-form")
-.addEventListener(
-"submit",
-e=>{
-
-
+document.querySelector(".contact-form").addEventListener("submit", e => {
     e.preventDefault();
-
-
-    alert(
-        "Спасибо! Сообщение подготовлено."
-    );
-
-
+    alert("Спасибо! Сообщение подготовлено.");
 });
