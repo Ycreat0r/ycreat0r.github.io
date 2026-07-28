@@ -398,7 +398,7 @@ section {
 
 .hero-buttons {
     display: flex;
-    gap: 16px;
+    gap: 10px;
     justify-content: center;
     margin-top: 32px;
     opacity: 0;
