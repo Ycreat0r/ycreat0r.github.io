@@ -28,7 +28,7 @@ window.addEventListener("load", () => {
    HERO FULLSCREEN CAROUSEL
 ===================================================== */
 
-const heroVideosList = works.filter(w => w.type === "video");
+const heroVideosList = works.filter(w => w.type === "video" && w.hero === true).slice(0, 3);
 let currentHeroIndex = 0;
 let isAnimating = false;
 let autoplayTimer = null;

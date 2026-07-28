@@ -29,6 +29,7 @@ const works = [
         id: 3,
         title: "Posvyat",
         type: "video",
+        hero: true,   // ← показывать в карусели
         category: "personal",
         year: "2025",
         thumbnail: "assets/images/hero.jpg",
