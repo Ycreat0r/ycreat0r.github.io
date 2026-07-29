@@ -42,7 +42,7 @@ const works = [
     id: 4,
     title: "Сломал гитару блин",
     type: "video",
-    category: "commercial",
+    category: "personal",
     year: "2025",
     thumbnail: "assets/images/01_bastard0.jpg",
     video: "assets/videos/01_bastard0.mp4",
@@ -65,18 +65,18 @@ const works = [
     title: "Пойдем в даль со мной",
     type: "video",
     hero: true,   // ← показывать в карусели
-    category: "commercial",
+    category: "personal",
     year: "2025",
     thumbnail: "assets/images/02_Vasya.jpg",
     video: "assets/videos/02_Vasya.mp4",
     description: "Коммерческий видеопроект.",
-    tags: ["Commercial", "Video"]
+    tags: ["Creative", "Video"]
 },
 {
     id: 7,
     title: "no flag alternative",
     type: "video",
-    category: "commercial",
+    category: "personal",
     year: "2025",
     thumbnail: "assets/images/no_flag.jpg",
     video: "assets/videos/no_flag.mp4",
