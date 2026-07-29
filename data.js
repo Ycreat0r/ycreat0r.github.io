@@ -21,7 +21,7 @@ const works = [
         type: "video",
         category: "commercial",
         year: "2025",
-        thumbnail: "assets/images/MAIF.jpg",
+        thumbnail: "assets/images/maif0.jpg",
         video: "assets/videos/MAIF.mp4",
         description: "Съёмка форума МАИФ в Пулково.",
         tags: ["Event", "Corporate", "Video"]
@@ -47,7 +47,7 @@ const works = [
     thumbnail: "assets/images/01_bastard0.jpg",
     video: "assets/videos/01_bastard0.mp4",
     description: "Коммерческий видеопроект.",
-    tags: ["Commercial", "Video"]
+    tags: ["Video"]
 },
 {
     id: 5,
@@ -74,14 +74,14 @@ const works = [
 },
 {
     id: 7,
-    title: "РИЛС Логвинский",
+    title: "no flag alternative",
     type: "video",
     category: "commercial",
     year: "2025",
-    thumbnail: "assets/images/2R_Final.jpg",
-    video: "assets/videos/2R_Final.mp4",
+    thumbnail: "assets/images/no_flag.jpg",
+    video: "assets/videos/no_flag.mp4",
     description: "Коммерческий видеопроект.",
-    tags: ["Commercial", "Event"]
+    tags: ["Creative", "Video"]
 },
 {
     id: 8,
@@ -136,7 +136,7 @@ const works = [
         thumbnail: "assets/images/Lazertag.jpg",
         video: "assets/videos/Lazertag.mp4",
         description: "Репортажная съёмка мероприятия Lazertag.",
-        tags: ["Репортаж", "Event", "4K"]
+        tags: ["Репортаж", "Event"]
 },
 {
     id: 13,
@@ -155,10 +155,10 @@ const works = [
     type: "video",
     category: "commercial",
     year: "2025",
-    thumbnail: "assets/images/Interv_BRolls_Travlenie.jpg",
+    thumbnail: "assets/images/Travlenie.jpg",
     video: "assets/videos/Interv_BRolls_Travlenie.mp4",
-    description: "B-roll видеоматериал.",
-    tags: ["B-roll"]
+    description: "Образовательный проект",
+    tags: ["Education", "Commercial", "Video"]
 },
 {
     id: 15,
@@ -184,7 +184,7 @@ const works = [
 },
 {
     id: 17,
-    title: "Кобзарь",
+    title: "Видеовизитка",
     type: "video",
     category: "commercial",
     year: "2025",
@@ -195,7 +195,7 @@ const works = [
 },
 {
     id: 18,
-    title: "Кондратюк",
+    title: "Видеовизитка",
     type: "video",
     category: "commercial",
     year: "2025",
@@ -259,5 +259,15 @@ const works = [
     description: "Коммерческий видеопроект.",
     tags: ["Commercial"]
 },
-
+{
+    id: 24,
+    title: "РИЛС Логвинский",
+    type: "video",
+    category: "commercial",
+    year: "2025",
+    thumbnail: "assets/images/2R_Final.jpg",
+    video: "assets/videos/2R_Final.mp4",
+    description: "Коммерческий видеопроект.",
+    tags: ["Commercial", "Event"]
+}
 ];
