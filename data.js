@@ -5,14 +5,15 @@
 const works = [
     {
         id: 1,
-        title: "ГУАП Лазертаг",
+        title: "ГУАП Творческий этап",
         type: "video",
-        category: "commercial",
+         hero: true,   // ← показывать в карусели
+        category: "personal",
         year: "2025",
-        thumbnail: "assets/images/Lazertag.jpg",
-        video: "assets/videos/Lazertag.mp4",
-        description: "Репортажная съёмка мероприятия Lazertag.",
-        tags: ["Репортаж", "Event", "4K"]
+        thumbnail: "assets/images/finalTvorch.jpg",
+        video: "assets/videos/finalTvorch.mp4",
+        description: "Авторский видеопроект.",
+        tags: ["Creative", "Cinema"]
     },
     {
         id: 2,
@@ -84,12 +85,12 @@ const works = [
 },
 {
     id: 8,
-    title: "3D Space Harry Potter",
+    title: "Harry Potter",
     type: "video",
     category: "personal",
     year: "2025",
-    thumbnail: "assets/images/3D_Space_Harry_Potter.jpg",
-    video: "assets/videos/3D_Space_Harry_Potter.mp4",
+    thumbnail: "assets/images/Harry_Potter.jpg",
+    video: "assets/videos/Harry_Potter.mp4",
     description: "3D-анимационный проект.",
     tags: ["3D", "Animation", "Creative"]
 },
@@ -128,14 +129,14 @@ const works = [
 },
 {
     id: 12,
-    title: "ГУАП Творческий этап",
-    type: "video",
-    category: "personal",
-    year: "2025",
-    thumbnail: "assets/images/finalTvorch.jpg",
-    video: "assets/videos/finalTvorch.mp4",
-    description: "Авторский видеопроект.",
-    tags: ["Creative", "Cinema"]
+     title: "ГУАП Лазертаг",
+        type: "video",
+        category: "commercial",
+        year: "2025",
+        thumbnail: "assets/images/Lazertag.jpg",
+        video: "assets/videos/Lazertag.mp4",
+        description: "Репортажная съёмка мероприятия Lazertag.",
+        tags: ["Репортаж", "Event", "4K"]
 },
 {
     id: 13,
