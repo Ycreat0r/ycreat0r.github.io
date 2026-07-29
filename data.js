@@ -5,7 +5,7 @@
 const works = [
     {
         id: 1,
-        title: "Lazertag",
+        title: "ГУАП Лазертаг",
         type: "video",
         category: "commercial",
         year: "2025",
@@ -27,7 +27,7 @@ const works = [
     },
     {
         id: 3,
-        title: "Posvyat",
+        title: "ГУАП Посвят",
         type: "video",
         hero: true,   // ← показывать в карусели
         category: "personal",
@@ -39,7 +39,7 @@ const works = [
     },
    {
     id: 4,
-    title: "01 Bastard",
+    title: "Сломал гитару блин",
     type: "video",
     category: "commercial",
     year: "2025",
@@ -50,7 +50,7 @@ const works = [
 },
 {
     id: 5,
-    title: "1R Final",
+    title: "РИЛС Логвинский",
     type: "video",
     category: "commercial",
     year: "2025",
@@ -61,7 +61,7 @@ const works = [
 },
 {
     id: 6,
-    title: "02 Vasya",
+    title: "Пойдем в даль со мной",
     type: "video",
     hero: true,   // ← показывать в карусели
     category: "commercial",
@@ -73,7 +73,7 @@ const works = [
 },
 {
     id: 7,
-    title: "2R Final",
+    title: "РИЛС Логвинский",
     type: "video",
     category: "commercial",
     year: "2025",
@@ -88,8 +88,8 @@ const works = [
     type: "video",
     category: "personal",
     year: "2025",
-    thumbnail: "assets/images/3D_Space_Harry_Potter_hw5.jpg",
-    video: "assets/videos/3D_Space_Harry_Potter_hw5.mp4",
+    thumbnail: "assets/images/3D_Space_Harry_Potter.jpg",
+    video: "assets/videos/3D_Space_Harry_Potter.mp4",
     description: "3D-анимационный проект.",
     tags: ["3D", "Animation", "Creative"]
 },
@@ -106,7 +106,7 @@ const works = [
 },
 {
     id: 10,
-    title: "Ярмарка",
+    title: "Ярмарка Вокансий",
     type: "video",
     category: "commercial",
     year: "2024",
@@ -128,7 +128,7 @@ const works = [
 },
 {
     id: 12,
-    title: "Творческий проект",
+    title: "ГУАП Творческий этап",
     type: "video",
     category: "personal",
     year: "2025",
@@ -150,7 +150,7 @@ const works = [
 },
 {
     id: 14,
-    title: "B-Rolls",
+    title: "Интервью травление плат",
     type: "video",
     category: "commercial",
     year: "2025",
@@ -161,7 +161,7 @@ const works = [
 },
 {
     id: 15,
-    title: "Итоги года",
+    title: "Итоги года Кафедра",
     type: "video",
     category: "commercial",
     year: "2025",
@@ -205,7 +205,7 @@ const works = [
 },
 {
     id: 19,
-    title: "Курс Module 1",
+    title: "Курс Нейросетей",
     type: "video",
     category: "commercial",
     year: "2025",
@@ -216,7 +216,7 @@ const works = [
 },
 {
     id: 20,
-    title: "Творческая визуализация",
+    title: "Творческая визитка",
     type: "video",
     category: "personal",
     year: "2025",
@@ -227,7 +227,7 @@ const works = [
 },
 {
     id: 21,
-    title: "Творческая визуализация 2",
+    title: "Творческая визитка",
     type: "video",
     category: "personal",
     year: "2025",
@@ -238,7 +238,7 @@ const works = [
 },
 {
     id: 22,
-    title: "Юбилей",
+    title: "Юбилей института",
     type: "video",
     category: "commercial",
     year: "2025",
