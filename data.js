@@ -107,7 +107,7 @@ const works = [
 },
 {
     id: 10,
-    title: "Ярмарка Вокансий",
+    title: "Ярмарка Вакансий",
     type: "video",
     category: "commercial",
     year: "2024",
